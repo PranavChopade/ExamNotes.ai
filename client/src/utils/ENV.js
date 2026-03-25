@@ -1,4 +1,5 @@
 export const ENV = {
+  backendUrl: import.meta.env.VITE_backendUrl,
   apiKey: import.meta.env.VITE_apiKey,
   authDomain: import.meta.env.VITE_authDomain,
   projectId: import.meta.env.VITE_projectId,

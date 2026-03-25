@@ -5,7 +5,7 @@ import axios from "axios";
  * Centralized API calls for the application
  */
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: ENV.backendUrl,
   withCredentials: true,
 });
 
