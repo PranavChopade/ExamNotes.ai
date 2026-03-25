@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import { api } from "../services/api";
 import { useUser } from "../hooks/useUser";
 import { FiInfo, FiFileText, FiSearch, FiEye, FiRefreshCw, FiTrash2, FiX, FiCopy } from "react-icons/fi";
+import { useNotes } from "../hooks/useNotes";
+import { setNotes } from "../redux/notesSlice";
 
 /**
  * Dashboard - A focused workspace for exam preparation
@@ -12,7 +14,10 @@ import { FiInfo, FiFileText, FiSearch, FiEye, FiRefreshCw, FiTrash2, FiX, FiCopy
  */
 const Dashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
+  const { notes } = useSelector((state) => state.notes);
+  const safeNotes = notes || [];
 
   // Form state
   const [topic, setTopic] = useState("");
@@ -20,8 +25,7 @@ const Dashboard = () => {
   const [generating, setGenerating] = useState(false);
   const [generatedNote, setGeneratedNote] = useState(null);
 
-  // Notes state
-  const [notes, setNotes] = useState([]);
+  // Notes state 
   const [loadingNotes, setLoadingNotes] = useState(true);
   const [activeTab, setActiveTab] = useState("generate");
 
@@ -39,6 +43,7 @@ const Dashboard = () => {
   const [filterDifficulty, setFilterDifficulty] = useState("all");
 
   const { profileHandler } = useUser();
+  const { generateNotesHandler, getUserNotesHandler, getNoteByIdHandler, deleteNoteHandler } = useNotes();
 
   useEffect(() => {
     if (!userData) {
@@ -50,8 +55,7 @@ const Dashboard = () => {
   const fetchNotes = async () => {
     try {
       setLoadingNotes(true);
-      const response = await api.get("/notes/v1/my-notes");
-      setNotes(response.data.notes);
+      await getUserNotesHandler()
     } catch (error) {
       console.error("Error fetching notes:", error);
     } finally {
@@ -82,7 +86,7 @@ const Dashboard = () => {
       setThinkingPhase("Organizing information...");
       await new Promise(resolve => setTimeout(resolve, 600));
 
-      const response = await api.post("/notes/v1/generate", {
+      const data = await generateNotesHandler({
         topic: topic.trim(),
         difficulty,
       });
@@ -90,7 +94,7 @@ const Dashboard = () => {
       setThinkingPhase("Finalizing notes...");
       await new Promise(resolve => setTimeout(resolve, 400));
 
-      setGeneratedNote(response.data.notes);
+      setGeneratedNote(data.notes);
       setTopic("");
       setThinkingPhase("");
       await fetchNotes();
@@ -110,8 +114,8 @@ const Dashboard = () => {
     if (!confirm("Delete this note? This can't be undone.")) return;
 
     try {
-      await api.delete(`/notes/v1/${noteId}`);
-      setNotes(notes.filter((note) => note._id !== noteId));
+      await deleteNoteHandler(noteId);
+      dispatch(setNotes(safeNotes?.filter((note) => note._id !== noteId)));
     } catch (error) {
       console.error("Error deleting note:", error);
     }
@@ -142,9 +146,8 @@ const Dashboard = () => {
     }
   };
 
-  // Get recent topics for quick access
-  const recentTopics = notes.slice(0, 3);
-
+  // Get recent topics for quick access ); 
+  const recentTopics = safeNotes.slice(0, 3);
   if (!userData) return null;
 
   return (
@@ -204,9 +207,9 @@ const Dashboard = () => {
                     }`}
                 >
                   My Notes
-                  {notes.length > 0 && (
+                  {safeNotes.length > 0 && (
                     <span className="ml-1.5 px-1.5 py-0.5 bg-stone-100 text-stone-500 rounded text-xs">
-                      {notes.length}
+                      {safeNotes.length}
                     </span>
                   )}
                 </button>
@@ -309,7 +312,7 @@ const Dashboard = () => {
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-stone-200 border-t-stone-600 mx-auto"></div>
                       <p className="text-stone-400 mt-3 text-sm">Loading your notes...</p>
                     </div>
-                  ) : notes.length === 0 ? (
+                  ) : safeNotes.length === 0 ? (
                     <div className="text-center py-12">
                       <FiFileText className="w-10 h-10 text-stone-300 mx-auto mb-3" />
                       <h3 className="text-base font-medium text-stone-700 mb-1">No notes yet</h3>
@@ -367,7 +370,7 @@ const Dashboard = () => {
 
                       {/* Filtered Notes */}
                       <div className="space-y-2">
-                        {notes
+                        {safeNotes
                           .filter(note => {
                             const matchesSearch = note.topic.toLowerCase().includes(searchQuery.toLowerCase());
                             const matchesDifficulty = filterDifficulty === "all" || note.difficulty === filterDifficulty;
@@ -642,11 +645,11 @@ const Dashboard = () => {
             </div>
 
             {/* Recent activity */}
-            {notes.length > 0 && (
+            {safeNotes.length > 0 && (
               <div className="bg-white rounded-lg border border-stone-200 p-4">
                 <h3 className="text-xs text-stone-500 uppercase tracking-wide mb-3 font-medium">Recent</h3>
                 <div className="space-y-2">
-                  {notes.slice(0, 3).map((note) => (
+                  {safeNotes.slice(0, 3).map((note) => (
                     <div
                       key={note._id}
                       onClick={() => {
