@@ -1,5 +1,5 @@
 import axios from "axios";
-import ENV from "../utils/ENV.js"
+import { ENV } from "../utils/ENV.js"
 /**
  * API Service Configuration
  * Centralized API calls for the application
