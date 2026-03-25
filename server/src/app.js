@@ -8,7 +8,7 @@ import { ENV } from "./config/ENV.js";
 // CORS configuration
 app.use(
   cors({
-    origin: ENV.ORIGIN || "http://localhost:5173",
+    origin: ENV.ORIGIN || "https://examnoteai.netlify.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   })

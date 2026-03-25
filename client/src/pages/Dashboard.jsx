@@ -42,11 +42,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!userData) {
-      navigate("/auth");
       return;
     }
     fetchNotes();
-  }, [userData, navigate]);
+  }, [userData]);
 
   const fetchNotes = async () => {
     try {
