@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
-import { api } from "../services/api";
 import { useUser } from "../hooks/useUser";
 import { FiInfo, FiFileText, FiSearch, FiEye, FiRefreshCw, FiTrash2, FiX, FiCopy } from "react-icons/fi";
 import { useNotes } from "../hooks/useNotes";
 import { setNotes } from "../redux/notesSlice";
-
+import { setQuiz } from "../redux/quizSlice"
+import Quiz from "./Quiz";
 /**
  * Dashboard - A focused workspace for exam preparation
  * Designed to feel like a real productivity tool, not a landing page
@@ -43,7 +43,7 @@ const Dashboard = () => {
   const [filterDifficulty, setFilterDifficulty] = useState("all");
 
   const { profileHandler } = useUser();
-  const { generateNotesHandler, getUserNotesHandler, getNoteByIdHandler, deleteNoteHandler } = useNotes();
+  const { generateNotesHandler, getUserNotesHandler, getNoteByIdHandler, deleteNoteHandler, generateQuizHandler } = useNotes();
 
   useEffect(() => {
     if (!userData) {
@@ -150,6 +150,16 @@ const Dashboard = () => {
   const recentTopics = safeNotes.slice(0, 3);
   if (!userData) return null;
 
+
+  const handleGenerateQuiz = async (content) => {
+    try {
+      const response = await generateQuizHandler(content)
+      dispatch(setQuiz(response.quiz))
+      navigate("/quiz")
+    } catch (error) {
+      console.error("Error deleting note:", error);
+    }
+  }
   return (
     <div className="min-h-screen bg-stone-50">
       <Navbar />
@@ -402,6 +412,16 @@ const Dashboard = () => {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      handleGenerateQuiz(note.content);
+                                    }}
+                                    className="px-2 py-1 text-xs font-medium text-teal-600 bg-teal-50 hover:bg-teal-100 rounded transition-colors"
+                                    title="Take Quiz"
+                                  >
+                                    📋 Quiz
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       setViewingNote(note);
                                     }}
                                     className="p-1.5 text-stone-400 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors"
@@ -593,13 +613,10 @@ const Dashboard = () => {
                     ← Generate another note
                   </button>
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(generatedNote.content);
-                      alert("Notes copied to clipboard!");
-                    }}
+                    onClick={() => handleGenerateQuiz(generatedNote.content)}
                     className="px-6 py-3 bg-white border-2 border-teal-200 text-teal-700 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-300"
                   >
-                    📋 Copy Notes
+                    📋 generate quiz
                   </button>
                 </div>
               </div>
@@ -607,7 +624,7 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar - Quiet, functional */}
-          <div className="lg:w-64 space-y-4">
+          <div className="hidden lg:block lg:w-64 space-y-4">
             {/* Credits - Minimal, not screaming */}
             <div className="bg-linear-to-br from-teal-50 to-white rounded-lg border border-teal-100 p-4">
               <div className="flex items-center justify-between mb-3">

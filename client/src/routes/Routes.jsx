@@ -4,6 +4,7 @@ import Auth from "../pages/Auth";
 import Dashboard from "../pages/Dashboard";
 import Pricing from "../pages/Pricing";
 import PrivateRoute from "../components/PrivateRoute";
+import Quiz from "../pages/Quiz";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,14 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <Dashboard />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/quiz",
+    element: (
+      <PrivateRoute>
+        <Quiz />
       </PrivateRoute>
     ),
   },

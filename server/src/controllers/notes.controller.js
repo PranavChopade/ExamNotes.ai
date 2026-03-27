@@ -1,6 +1,6 @@
 import { Notes } from "../models/notes.model.js";
 import { User } from "../models/user.model.js";
-import { AiModel } from "../services/gemini.services.js";
+import { CombinedAiModel } from "../services/gemini.services.js";
 
 /**
  * Generate new notes
@@ -28,13 +28,15 @@ export const generateNotes = async (req, res) => {
       });
     }
 
-    const generatedContent = await AiModel({ topic, difficulty });
+    const result = await CombinedAiModel({ topic, difficulty });
 
-    if (!generatedContent) {
+    if (!result || !result.notes) {
       return res.status(500).json({
         message: "Failed to generate notes. Please try again.",
       });
     }
+
+    const generatedContent = result.notes;
 
 
     user.credits -= 15;
@@ -125,6 +127,30 @@ export const deleteNote = async (req, res) => {
     });
 
     res.status(200).json({ message: "Note deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const generateQuizFromContent = async (req, res) => {
+  try {
+    const { content } = req.body;
+    if (!content) {
+      return res.status(400).json({ message: "content is required" });
+    }
+
+    const result = await CombinedAiModel({ content });
+
+    if (!result || !result.quiz) {
+      return res.status(500).json({
+        message: "Failed to generate quiz. Please try again.",
+      });
+    }
+
+    res.status(200).json({
+      message: "Quiz generated successfully",
+      quiz: result.quiz,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

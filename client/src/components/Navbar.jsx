@@ -10,7 +10,6 @@ const Navbar = () => {
   const popupRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
-
   // Get user data from Redux store
   const { userData } = useSelector((state) => state.user);
   const { logoutHandler } = useUser();
@@ -132,7 +131,7 @@ const Navbar = () => {
               </div>
             ) : (
               /* Login/Signup Buttons */
-              <div className="flex items-center space-x-3">
+              <div>
                 <Link
                   to="/auth"
                   className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-600 transition-colors shadow-sm"

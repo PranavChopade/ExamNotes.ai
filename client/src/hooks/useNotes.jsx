@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { generateNotes, getUserNotes, getNoteById, deleteNote } from "../services/api";
+import { generateNotes, getUserNotes, getNoteById, deleteNote, generateQuiz } from "../services/api";
 import { setNotes } from "../redux/notesSlice";
 
 export const useNotes = () => {
@@ -51,10 +51,21 @@ export const useNotes = () => {
     }
   };
 
+  const generateQuizHandler = async (content) => {
+    try {
+      const data = await generateQuiz(content);
+      return data;
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  }
+
   return {
     generateNotesHandler,
     getUserNotesHandler,
     getNoteByIdHandler,
     deleteNoteHandler,
+    generateQuizHandler
   };
 };

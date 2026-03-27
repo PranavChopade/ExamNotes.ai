@@ -4,6 +4,7 @@ import {
   getUserNotes,
   getNoteById,
   deleteNote,
+  generateQuizFromContent
 } from "../controllers/notes.controller.js";
 import { isAuth } from "../middlewares/auth.middleware.js";
 
@@ -23,5 +24,8 @@ router.get("/:noteId", getNoteById);
 
 // Delete a note
 router.delete("/:noteId", deleteNote);
+
+// generate quiz
+router.post("/gen-quiz", generateQuizFromContent)
 
 export default router;
