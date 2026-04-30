@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import { useUser } from "../hooks/useUser";
 import { FiInfo, FiFileText, FiSearch, FiEye, FiRefreshCw, FiTrash2, FiX, FiCopy } from "react-icons/fi";
+import { LuBrain } from "react-icons/lu";
 import { useNotes } from "../hooks/useNotes";
 import { setNotes } from "../redux/notesSlice";
 import { setQuiz } from "../redux/quizSlice"
@@ -37,6 +38,9 @@ const Dashboard = () => {
 
   // View note state
   const [viewingNote, setViewingNote] = useState(null);
+
+  // Quiz generation state
+  const [generatingQuiz, setGeneratingQuiz] = useState(false);
 
   // Search/filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -153,25 +157,28 @@ const Dashboard = () => {
 
   const handleGenerateQuiz = async (content) => {
     try {
+      setGeneratingQuiz(true);
       const response = await generateQuizHandler(content)
       dispatch(setQuiz(response.quiz))
       navigate("/quiz")
     } catch (error) {
-      console.error("Error deleting note:", error);
+      console.error("Error generating quiz:", error);
+    } finally {
+      setGeneratingQuiz(false);
     }
   }
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header - Warm, human, left-aligned */}
         <div className="mb-8">
-          <h1 className="text-xl font-medium text-stone-800 mb-1">
+          <h1 className="text-xl font-medium text-text-primary mb-1">
             What do you want to study today?
           </h1>
-          <p className="text-stone-500 text-sm">
-            Generate notes on any topic. <span className="text-teal-600 font-medium">{userData.credits}</span> credits remaining.
+          <p className="text-text-secondary text-sm">
+            Generate notes on any topic. <span className="text-primary font-medium">{userData.credits}</span> credits remaining.
           </p>
         </div>
 
@@ -181,13 +188,13 @@ const Dashboard = () => {
             {/* Recent topics - Quick continue */}
             {recentTopics.length > 0 && !generating && !generatedNote && (
               <div className="mb-6">
-                <p className="text-xs text-stone-400 uppercase tracking-wide mb-3">Continue studying</p>
+                <p className="text-xs text-text-secondary uppercase tracking-wide mb-3">Continue studying</p>
                 <div className="flex flex-wrap gap-2">
                   {recentTopics.map((note) => (
                     <button
                       key={note._id}
                       onClick={() => setTopic(note.topic)}
-                      className="px-3 py-1.5 bg-white border border-stone-200 rounded-md text-sm text-stone-600 hover:border-teal-300 hover:text-teal-700 transition-all hover:shadow-sm"
+                      className="px-3 py-1.5 bg-surface border border-border rounded-md text-sm text-text-secondary hover:border-primary hover:text-primary transition-all hover:shadow-sm"
                     >
                       {note.topic}
                     </button>
@@ -197,14 +204,14 @@ const Dashboard = () => {
             )}
 
             {/* Main input area */}
-            <div className="bg-white rounded-lg border border-stone-200 shadow-sm">
+            <div className="bg-surface rounded-lg border border-border shadow-sm">
               {/* Tab switcher */}
-              <div className="flex border-b border-stone-100">
+              <div className="flex border-b border-border">
                 <button
                   onClick={() => setActiveTab("generate")}
                   className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 ${activeTab === "generate"
-                    ? "border-teal-600 text-teal-700"
-                    : "border-transparent text-stone-400 hover:text-stone-600"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-text-secondary hover:text-text-primary"
                     }`}
                 >
                   Generate
@@ -212,13 +219,13 @@ const Dashboard = () => {
                 <button
                   onClick={() => setActiveTab("history")}
                   className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 ${activeTab === "history"
-                    ? "border-teal-600 text-teal-700"
-                    : "border-transparent text-stone-400 hover:text-stone-600"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-text-secondary hover:text-text-primary"
                     }`}
                 >
                   My Notes
                   {safeNotes.length > 0 && (
-                    <span className="ml-1.5 px-1.5 py-0.5 bg-stone-100 text-stone-500 rounded text-xs">
+                    <span className="ml-1.5 px-1.5 py-0.5 bg-background text-text-secondary rounded text-xs">
                       {safeNotes.length}
                     </span>
                   )}
@@ -231,7 +238,7 @@ const Dashboard = () => {
                   <form onSubmit={handleGenerateNotes} className="space-y-5">
                     {/* Topic input */}
                     <div>
-                      <label className="block text-sm text-stone-600 mb-2">
+                      <label className="block text-sm text-text-secondary mb-2">
                         Topic
                       </label>
                       <input
@@ -239,17 +246,17 @@ const Dashboard = () => {
                         value={topic}
                         onChange={(e) => setTopic(e.target.value)}
                         placeholder="e.g., JavaScript fundamentals, World War II, Organic Chemistry..."
-                        className="w-full px-4 py-3 border border-stone-200 rounded-lg focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none transition-all text-stone-800 placeholder-stone-400 bg-stone-50/50"
+                        className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all text-text-primary placeholder-text-secondary bg-background"
                         disabled={generating}
                       />
-                      <p className="mt-1.5 text-xs text-stone-400">
+                      <p className="mt-1.5 text-xs text-text-secondary">
                         Be specific for better results. Include chapter names or key concepts.
                       </p>
                     </div>
 
                     {/* Difficulty */}
                     <div>
-                      <label className="block text-sm text-stone-600 mb-2">
+                      <label className="block text-sm text-text-secondary mb-2">
                         Level
                       </label>
                       <div className="flex gap-2">
@@ -260,8 +267,8 @@ const Dashboard = () => {
                             onClick={() => setDifficulty(level)}
                             disabled={generating}
                             className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium capitalize transition-all border ${difficulty === level
-                              ? "bg-teal-700 text-white border-teal-700 shadow-sm"
-                              : "bg-white text-stone-500 border-stone-200 hover:border-teal-200 hover:text-teal-700"
+                              ? "bg-primary text-white border-primary shadow-sm"
+                              : "bg-surface text-text-secondary border-border hover:border-primary hover:text-primary"
                               }`}
                           >
                             {level}
@@ -271,33 +278,33 @@ const Dashboard = () => {
                     </div>
 
                     {/* Credits info  */}
-                    <div className="flex items-center justify-between py-2.5 px-3 bg-stone-50 rounded-lg border border-stone-100">
+                    <div className="flex items-center justify-between py-2.5 px-3 bg-background rounded-lg border border-border">
                       <div className="flex items-center gap-2">
-                        <FiInfo className="w-3.5 h-3.5 text-stone-400" />
-                        <span className="text-xs text-stone-500">Costs 15 credits</span>
+                        <FiInfo className="w-3.5 h-3.5 text-text-secondary" />
+                        <span className="text-xs text-text-secondary">Costs 15 credits</span>
                       </div>
-                      <span className="text-xs text-stone-400">
+                      <span className="text-xs text-text-secondary">
                         {userData.credits} available
                       </span>
                     </div>
 
                     {/* Error */}
                     {error && (
-                      <div className="py-2.5 px-3 bg-red-50 border border-red-100 rounded-lg">
-                        <p className="text-sm text-red-600">{error}</p>
+                      <div className="py-2.5 px-3 bg-red-900/20 border border-red-900/50 rounded-lg">
+                        <p className="text-sm text-red-400">{error}</p>
                       </div>
                     )}
 
                     {/* Thinking phases */}
                     {generating && thinkingPhase && (
-                      <div className="py-3 px-4 bg-stone-50 border border-stone-100 rounded-lg">
+                      <div className="py-3 px-4 bg-background border border-border rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="flex gap-1">
-                            <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
-                          <span className="text-sm text-stone-600">{thinkingPhase}</span>
+                          <span className="text-sm text-text-secondary">{thinkingPhase}</span>
                         </div>
                       </div>
                     )}
@@ -306,7 +313,7 @@ const Dashboard = () => {
                     <button
                       type="submit"
                       disabled={generating || userData.credits < 15}
-                      className="w-full py-3 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm shadow-sm"
+                      className="w-full py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm shadow-sm"
                     >
                       {generating ? "Generating..." : "Generate notes"}
                     </button>
@@ -319,19 +326,19 @@ const Dashboard = () => {
                 <div className="p-6">
                   {loadingNotes ? (
                     <div className="text-center py-12">
-                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-stone-200 border-t-stone-600 mx-auto"></div>
-                      <p className="text-stone-400 mt-3 text-sm">Loading your notes...</p>
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-border border-t-primary mx-auto"></div>
+                      <p className="text-text-secondary mt-3 text-sm">Loading your notes...</p>
                     </div>
                   ) : safeNotes.length === 0 ? (
                     <div className="text-center py-12">
-                      <FiFileText className="w-10 h-10 text-stone-300 mx-auto mb-3" />
-                      <h3 className="text-base font-medium text-stone-700 mb-1">No notes yet</h3>
-                      <p className="text-stone-400 text-sm mb-4">
+                      <FiFileText className="w-10 h-10 text-text-secondary mx-auto mb-3" />
+                      <h3 className="text-base font-medium text-text-primary mb-1">No notes yet</h3>
+                      <p className="text-text-secondary text-sm mb-4">
                         Generate your first set of notes to see them here.
                       </p>
                       <button
                         onClick={() => setActiveTab("generate")}
-                        className="px-4 py-2 bg-teal-700 text-white rounded-lg text-sm font-medium hover:bg-teal-600 transition-colors shadow-sm"
+                        className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
                       >
                         Create your first note
                       </button>
@@ -341,37 +348,37 @@ const Dashboard = () => {
                       {/* Search and Filter */}
                       <div className="mb-4 space-y-3">
                         <div className="relative">
-                          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                           <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search notes..."
-                            className="w-full pl-10 pr-4 py-2 border border-stone-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-200 focus:border-teal-400 outline-none"
+                            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none bg-background text-text-primary"
                           />
                         </div>
                         <div className="flex gap-2">
                           <button
                             onClick={() => setFilterDifficulty("all")}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "all" ? "bg-teal-700 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "all" ? "bg-primary text-white" : "bg-background text-text-secondary hover:bg-surface"}`}
                           >
                             All
                           </button>
                           <button
                             onClick={() => setFilterDifficulty("beginner")}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "beginner" ? "bg-teal-700 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "beginner" ? "bg-primary text-white" : "bg-background text-text-secondary hover:bg-surface"}`}
                           >
                             Beginner
                           </button>
                           <button
                             onClick={() => setFilterDifficulty("intermediate")}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "intermediate" ? "bg-teal-700 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "intermediate" ? "bg-primary text-white" : "bg-background text-text-secondary hover:bg-surface"}`}
                           >
                             Intermediate
                           </button>
                           <button
                             onClick={() => setFilterDifficulty("advanced")}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "advanced" ? "bg-teal-700 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"}`}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${filterDifficulty === "advanced" ? "bg-primary text-white" : "bg-background text-text-secondary hover:bg-surface"}`}
                           >
                             Advanced
                           </button>
@@ -389,22 +396,22 @@ const Dashboard = () => {
                           .map((note) => (
                             <div
                               key={note._id}
-                              className="group p-4 rounded-lg border border-stone-100 hover:border-stone-200 hover:bg-stone-50/50 transition-all"
+                              className="group p-4 rounded-lg border border-border hover:border-primary hover:bg-background transition-all"
                             >
                               <div className="flex items-start justify-between">
                                 <div
                                   className="flex-1 min-w-0 cursor-pointer"
                                   onClick={() => setViewingNote(note)}
                                 >
-                                  <h4 className="font-medium text-stone-800 mb-1 truncate">
+                                  <h4 className="font-medium text-text-primary mb-1 truncate">
                                     {note.topic}
                                   </h4>
-                                  <div className="flex items-center gap-2 text-xs text-stone-400">
+                                  <div className="flex items-center gap-2 text-xs text-text-secondary">
                                     <span>{getDifficultyLabel(note.difficulty)}</span>
                                     <span>•</span>
                                     <span>{formatDate(note.createdAt)}</span>
                                   </div>
-                                  <p className="text-sm text-stone-500 mt-2 line-clamp-2">
+                                  <p className="text-sm text-text-secondary mt-2 line-clamp-2">
                                     {note.content.substring(0, 150)}...
                                   </p>
                                 </div>
@@ -412,19 +419,9 @@ const Dashboard = () => {
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      handleGenerateQuiz(note.content);
-                                    }}
-                                    className="px-2 py-1 text-xs font-medium text-teal-600 bg-teal-50 hover:bg-teal-100 rounded transition-colors"
-                                    title="Take Quiz"
-                                  >
-                                    📋 Quiz
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
                                       setViewingNote(note);
                                     }}
-                                    className="p-1.5 text-stone-400 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors"
+                                    className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors"
                                     title="View note"
                                   >
                                     <FiEye className="w-4 h-4" />
@@ -436,7 +433,7 @@ const Dashboard = () => {
                                       setDifficulty(note.difficulty);
                                       setActiveTab("generate");
                                     }}
-                                    className="p-1.5 text-stone-400 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors"
+                                    className="p-1.5 text-text-secondary hover:text-primary hover:bg-primary/10 rounded transition-colors"
                                     title="Regenerate"
                                   >
                                     <FiRefreshCw className="w-4 h-4" />
@@ -446,7 +443,7 @@ const Dashboard = () => {
                                       e.stopPropagation();
                                       handleDeleteNote(note._id);
                                     }}
-                                    className="p-1.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                    className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
                                     title="Delete note"
                                   >
                                     <FiTrash2 className="w-4 h-4" />
@@ -464,28 +461,28 @@ const Dashboard = () => {
 
             {/* Generated note result */}
             {generatedNote && (
-              <div className="mt-6 bg-white rounded-2xl border-2 border-teal-100 shadow-xl shadow-teal-500/10 p-8 animate-fadeIn">
+              <div className="mt-6 bg-surface rounded-2xl border-2 border-primary/50 shadow-xl shadow-primary/10 p-8 animate-fadeIn">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-2xl font-bold text-teal-700">{generatedNote.topic}</h3>
-                    <p className="text-sm text-stone-500 mt-2 flex items-center gap-2">
-                      <span className="px-3 py-1 bg-teal-100 rounded-full text-teal-700 font-semibold text-xs">{getDifficultyLabel(generatedNote.difficulty)}</span>
+                    <h3 className="text-2xl font-bold text-text-primary">{generatedNote.topic}</h3>
+                    <p className="text-sm text-text-secondary mt-2 flex items-center gap-2">
+                      <span className="px-3 py-1 bg-primary/10 rounded-full text-primary font-semibold text-xs">{getDifficultyLabel(generatedNote.difficulty)}</span>
                       <span>•</span>
                       <span>Generated just now</span>
                     </p>
                   </div>
-                  <span className="px-4 py-2 bg-linear-to-r from-teal-500 to-emerald-500 text-white text-sm font-bold rounded-full shadow-lg shadow-teal-500/30">
+                  <span className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-full shadow-lg shadow-primary/30">
                     ✓ Created
                   </span>
                 </div>
                 <div className="space-y-4 text-sm">
                   {generatedNote.content.split("\n").map((line, i) => {
-                    // SECTION HEADINGS with greenery/teal styling
+                    // SECTION HEADINGS with greenery/emerald styling
                     if (line.startsWith("## CORE_CONCEPTS")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-teal-50 to-emerald-50 rounded-xl border-l-4 border-teal-500">
-                          <div className="font-bold text-teal-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-teal-500 to-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">💡</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">💡</span>
                             Core Concepts
                           </div>
                         </div>
@@ -494,9 +491,9 @@ const Dashboard = () => {
 
                     if (line.startsWith("## QUICK_REVISION_QA")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-green-50 to-teal-50 rounded-xl border-l-4 border-green-500">
-                          <div className="font-bold text-green-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center text-white text-sm">❓</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">❓</span>
                             Quick Revision Q&A
                           </div>
                         </div>
@@ -505,9 +502,9 @@ const Dashboard = () => {
 
                     if (line.startsWith("## IMPORTANT_POINTS")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-emerald-50 to-green-50 rounded-xl border-l-4 border-emerald-500">
-                          <div className="font-bold text-emerald-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center text-white text-sm">⭐</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">⭐</span>
                             Important Points
                           </div>
                         </div>
@@ -516,9 +513,9 @@ const Dashboard = () => {
 
                     if (line.startsWith("## COMMON_MISTAKES")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-lime-50 to-emerald-50 rounded-xl border-l-4 border-lime-500">
-                          <div className="font-bold text-lime-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-lime-500 to-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">⚠️</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">⚠️</span>
                             Common Mistakes
                           </div>
                         </div>
@@ -527,9 +524,9 @@ const Dashboard = () => {
 
                     if (line.startsWith("## COMPARISONS")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-teal-50 to-cyan-50 rounded-xl border-l-4 border-teal-500">
-                          <div className="font-bold text-teal-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-teal-500 to-cyan-500 rounded-lg flex items-center justify-center text-white text-sm">⚖️</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">⚖️</span>
                             Comparisons
                           </div>
                         </div>
@@ -538,9 +535,9 @@ const Dashboard = () => {
 
                     if (line.startsWith("## QUICK_RECALL")) {
                       return (
-                        <div key={i} className="mt-8 p-4 bg-linear-to-r from-green-50 to-emerald-50 rounded-xl border-l-4 border-green-500">
-                          <div className="font-bold text-green-700 flex items-center gap-2 text-lg">
-                            <span className="w-8 h-8 bg-linear-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center text-white text-sm">🧠</span>
+                        <div key={i} className="mt-8 p-4 bg-primary/10 rounded-xl border-l-4 border-primary">
+                          <div className="font-bold text-text-primary flex items-center gap-2 text-lg">
+                            <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white text-sm">🧠</span>
                             Quick Recall
                           </div>
                         </div>
@@ -550,7 +547,7 @@ const Dashboard = () => {
                     // Q&A Subheadings
                     if (line.startsWith("### Q")) {
                       return (
-                        <div key={i} className="mt-4 font-bold text-teal-800 bg-teal-100 px-3 py-2 rounded-lg">
+                        <div key={i} className="mt-4 font-bold text-primary bg-primary/10 px-3 py-2 rounded-lg">
                           {line.replace("### ", "")}
                         </div>
                       );
@@ -559,7 +556,7 @@ const Dashboard = () => {
                     // Comparison subheadings
                     if (line.startsWith("### ") && line.includes(" vs ")) {
                       return (
-                        <div key={i} className="mt-4 font-bold text-teal-700 bg-teal-100 px-3 py-2 rounded-lg">
+                        <div key={i} className="mt-4 font-bold text-primary bg-primary/10 px-3 py-2 rounded-lg">
                           {line.replace("### ", "")}
                         </div>
                       );
@@ -568,7 +565,7 @@ const Dashboard = () => {
                     // Answer lines
                     if (line.startsWith("Answer:")) {
                       return (
-                        <div key={i} className="text-stone-700 pl-4 border-l-2 border-teal-300 bg-teal-50/50 py-2 px-3 rounded-r-lg">
+                        <div key={i} className="text-text-secondary pl-4 border-l-2 border-primary bg-primary/5 py-2 px-3 rounded-r-lg">
                           {line}
                         </div>
                       );
@@ -576,11 +573,11 @@ const Dashboard = () => {
 
                     // Bullet points with bold highlighting
                     if (line.startsWith("- ")) {
-                      const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-600 font-semibold">$1</strong>');
+                      const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>');
                       return (
                         <div
                           key={i}
-                          className="text-stone-700 pl-6 py-1 relative"
+                          className="text-text-secondary pl-6 py-1 relative"
                           dangerouslySetInnerHTML={{ __html: `• ${boldText.substring(2)}` }}
                         />
                       );
@@ -592,31 +589,32 @@ const Dashboard = () => {
                     }
 
                     // NORMAL TEXT with bold highlighting
-                    const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-600 font-semibold">$1</strong>');
+                    const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>');
                     return (
                       <div
                         key={i}
-                        className="text-stone-700 pl-2"
+                        className="text-text-secondary pl-2"
                         dangerouslySetInnerHTML={{ __html: boldText }}
                       />
                     );
                   })}
                 </div>
-                <div className="mt-8 pt-6 border-t-2 border-teal-100 flex gap-4">
+                <div className="mt-8 pt-6 border-t-2 border-border flex gap-4">
                   <button
                     onClick={() => {
                       setGeneratedNote(null);
                       setActiveTab("generate");
                     }}
-                    className="px-6 py-3 bg-teal-700 text-white rounded-xl font-semibold hover:bg-teal-600 transition-all duration-300 shadow-lg shadow-teal-500/30 hover:-translate-y-1"
+                    className="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/30 hover:-translate-y-1"
                   >
                     ← Generate another note
                   </button>
                   <button
                     onClick={() => handleGenerateQuiz(generatedNote.content)}
-                    className="px-6 py-3 bg-white border-2 border-teal-200 text-teal-700 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-300"
+                    disabled={generatingQuiz}
+                    className="px-6 py-3 bg-surface border-2 border-border text-text-primary rounded-xl font-semibold hover:bg-background transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    📋 generate quiz
+                    {generatingQuiz ? "📋 Generating quiz..." : "📋 generate quiz"}
                   </button>
                 </div>
               </div>
@@ -626,36 +624,36 @@ const Dashboard = () => {
           {/* Sidebar - Quiet, functional */}
           <div className="hidden lg:block lg:w-64 space-y-4">
             {/* Credits - Minimal, not screaming */}
-            <div className="bg-linear-to-br from-teal-50 to-white rounded-lg border border-teal-100 p-4">
+            <div className="bg-surface rounded-lg border border-border p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-teal-600 uppercase tracking-wide font-medium">Credits</span>
-                <span className="text-lg font-semibold text-teal-700">{userData.credits}</span>
+                <span className="text-xs text-primary uppercase tracking-wide font-medium">Credits</span>
+                <span className="text-lg font-semibold text-primary">{userData.credits}</span>
               </div>
-              <p className="text-xs text-stone-400 mb-3">
+              <p className="text-xs text-text-secondary mb-3">
                 ~{Math.floor(userData.credits / 15)} generations left
               </p>
               <button
                 onClick={() => navigate("/pricing")}
-                className="w-full py-2 bg-teal-700 rounded-lg text-xs font-medium text-white hover:bg-teal-600 transition-all shadow-sm"
+                className="w-full py-2 bg-primary rounded-lg text-xs font-medium text-white hover:bg-primary/90 transition-all shadow-sm"
               >
                 Get more credits
               </button>
             </div>
 
             {/* Quick tips */}
-            <div className="bg-linear-to-br from-amber-50/50 to-white rounded-lg border border-amber-100/50 p-4">
-              <h3 className="text-xs text-amber-700 uppercase tracking-wide mb-3 font-medium">Tips</h3>
-              <ul className="space-y-2 text-xs text-stone-600">
+            <div className="bg-surface rounded-lg border border-border p-4">
+              <h3 className="text-xs text-text-secondary uppercase tracking-wide mb-3 font-medium">Tips</h3>
+              <ul className="space-y-2 text-xs text-text-secondary">
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-400 mt-0.5">•</span>
+                  <span className="text-primary mt-0.5">•</span>
                   <span>Be specific with topics for better results</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-400 mt-0.5">•</span>
+                  <span className="text-primary mt-0.5">•</span>
                   <span>Try "Photosynthesis" instead of just "Biology"</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-400 mt-0.5">•</span>
+                  <span className="text-primary mt-0.5">•</span>
                   <span>Advanced level includes more detailed explanations</span>
                 </li>
               </ul>
@@ -663,8 +661,8 @@ const Dashboard = () => {
 
             {/* Recent activity */}
             {safeNotes.length > 0 && (
-              <div className="bg-white rounded-lg border border-stone-200 p-4">
-                <h3 className="text-xs text-stone-500 uppercase tracking-wide mb-3 font-medium">Recent</h3>
+              <div className="bg-surface rounded-lg border border-border p-4">
+                <h3 className="text-xs text-text-secondary uppercase tracking-wide mb-3 font-medium">Recent</h3>
                 <div className="space-y-2">
                   {safeNotes.slice(0, 3).map((note) => (
                     <div
@@ -675,10 +673,10 @@ const Dashboard = () => {
                       }}
                       className="cursor-pointer group"
                     >
-                      <p className="text-sm text-stone-600 group-hover:text-stone-800 transition-colors truncate">
+                      <p className="text-sm text-text-secondary group-hover:text-text-primary transition-colors truncate">
                         {note.topic}
                       </p>
-                      <p className="text-xs text-stone-400 mt-0.5">
+                      <p className="text-xs text-text-secondary mt-0.5">
                         {formatDate(note.createdAt)}
                       </p>
                     </div>
@@ -693,13 +691,13 @@ const Dashboard = () => {
       {/* View Note Modal */}
       {viewingNote && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+          <div className="bg-surface rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-border">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-stone-200">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h3 className="text-xl font-bold text-stone-800">{viewingNote.topic}</h3>
-                <div className="flex items-center gap-2 mt-1 text-sm text-stone-500">
-                  <span className="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-medium">
+                <h3 className="text-xl font-bold text-text-primary">{viewingNote.topic}</h3>
+                <div className="flex items-center gap-2 mt-1 text-sm text-text-secondary">
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-xs font-medium">
                     {getDifficultyLabel(viewingNote.difficulty)}
                   </span>
                   <span>•</span>
@@ -708,7 +706,7 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => setViewingNote(null)}
-                className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+                className="p-2 text-text-secondary hover:text-text-primary hover:bg-background rounded-lg transition-colors"
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -721,43 +719,43 @@ const Dashboard = () => {
                   // SECTION HEADINGS
                   if (line.startsWith("## CORE_CONCEPTS")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-teal-50 to-emerald-50 rounded-lg border-l-4 border-teal-500">
-                        <div className="font-bold text-teal-700">💡 Core Concepts</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">💡 Core Concepts</div>
                       </div>
                     );
                   }
                   if (line.startsWith("## QUICK_REVISION_QA")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-green-50 to-teal-50 rounded-lg border-l-4 border-green-500">
-                        <div className="font-bold text-green-700">❓ Quick Revision Q&A</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">❓ Quick Revision Q&A</div>
                       </div>
                     );
                   }
                   if (line.startsWith("## IMPORTANT_POINTS")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-emerald-50 to-green-50 rounded-lg border-l-4 border-emerald-500">
-                        <div className="font-bold text-emerald-700">⭐ Important Points</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">⭐ Important Points</div>
                       </div>
                     );
                   }
                   if (line.startsWith("## COMMON_MISTAKES")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-lime-50 to-emerald-50 rounded-lg border-l-4 border-lime-500">
-                        <div className="font-bold text-lime-700">⚠️ Common Mistakes</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">⚠️ Common Mistakes</div>
                       </div>
                     );
                   }
                   if (line.startsWith("## COMPARISONS")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-teal-50 to-cyan-50 rounded-lg border-l-4 border-teal-500">
-                        <div className="font-bold text-teal-700">⚖️ Comparisons</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">⚖️ Comparisons</div>
                       </div>
                     );
                   }
                   if (line.startsWith("## QUICK_RECALL")) {
                     return (
-                      <div key={i} className="mt-6 p-3 bg-linear-to-r from-green-50 to-emerald-50 rounded-lg border-l-4 border-green-500">
-                        <div className="font-bold text-green-700">🧠 Quick Recall</div>
+                      <div key={i} className="mt-6 p-3 bg-primary/10 rounded-lg border-l-4 border-primary">
+                        <div className="font-bold text-text-primary">🧠 Quick Recall</div>
                       </div>
                     );
                   }
@@ -765,7 +763,7 @@ const Dashboard = () => {
                   // Q&A Subheadings
                   if (line.startsWith("### Q")) {
                     return (
-                      <div key={i} className="mt-3 font-semibold text-teal-800 bg-teal-100 px-3 py-1.5 rounded">
+                      <div key={i} className="mt-3 font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded">
                         {line.replace("### ", "")}
                       </div>
                     );
@@ -774,7 +772,7 @@ const Dashboard = () => {
                   // Answer lines
                   if (line.startsWith("Answer:")) {
                     return (
-                      <div key={i} className="text-stone-700 pl-3 border-l-2 border-teal-300 bg-teal-50/50 py-2 px-3 rounded-r">
+                      <div key={i} className="text-text-secondary pl-3 border-l-2 border-primary bg-primary/5 py-2 px-3 rounded-r">
                         {line}
                       </div>
                     );
@@ -782,11 +780,11 @@ const Dashboard = () => {
 
                   // Bullet points
                   if (line.startsWith("- ")) {
-                    const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-600 font-semibold">$1</strong>');
+                    const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>');
                     return (
                       <div
                         key={i}
-                        className="text-stone-700 pl-4 py-0.5"
+                        className="text-text-secondary pl-4 py-0.5"
                         dangerouslySetInnerHTML={{ __html: `• ${boldText.substring(2)}` }}
                       />
                     );
@@ -798,11 +796,11 @@ const Dashboard = () => {
                   }
 
                   // Normal text
-                  const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-600 font-semibold">$1</strong>');
+                  const boldText = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>');
                   return (
                     <div
                       key={i}
-                      className="text-stone-700"
+                      className="text-text-secondary"
                       dangerouslySetInnerHTML={{ __html: boldText }}
                     />
                   );
@@ -811,7 +809,7 @@ const Dashboard = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-stone-200 flex gap-3">
+            <div className="p-6 border-t border-border flex gap-3">
               <button
                 onClick={() => {
                   setTopic(viewingNote.topic);
@@ -819,17 +817,25 @@ const Dashboard = () => {
                   setViewingNote(null);
                   setActiveTab("generate");
                 }}
-                className="flex-1 py-2.5 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
               >
                 <FiRefreshCw className="w-4 h-4" />
                 Regenerate
+              </button>
+              <button
+                onClick={() => handleGenerateQuiz(viewingNote.content)}
+                disabled={generatingQuiz}
+                className="flex-1 py-2.5 border border-border text-text-secondary rounded-lg font-medium hover:bg-background transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <LuBrain className="w-4 h-4 text-primary" />
+                {generatingQuiz ? "Generating..." : "Quiz"}
               </button>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(viewingNote.content);
                   alert("Notes copied to clipboard!");
                 }}
-                className="flex-1 py-2.5 border border-stone-200 text-stone-600 rounded-lg font-medium hover:bg-stone-50 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 border border-border text-text-secondary rounded-lg font-medium hover:bg-background transition-colors flex items-center justify-center gap-2"
               >
                 <FiCopy className="w-4 h-4" />
                 Copy

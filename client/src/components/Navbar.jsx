@@ -49,28 +49,28 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-white border-b border-stone-100 sticky top-0 z-50">
+    <nav className="w-full bg-surface border-b border-border sticky top-0 z-50 glass-effect">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           {/* Logo Section */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-teal-700 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-medium text-sm">N</span>
             </div>
-            <span className="text-base font-medium text-stone-800">ExamNotes.Ai</span>
+            <span className="text-base font-medium text-text-primary">ExamNotes.Ai</span>
           </Link>
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-6">
             <Link
               to="/"
-              className="text-sm text-stone-600 hover:text-stone-800 transition-colors"
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
               Home
             </Link>
             <Link
               to="/pricing"
-              className="text-sm text-stone-600 hover:text-stone-800 transition-colors"
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
               Pricing
             </Link>
@@ -78,10 +78,10 @@ const Navbar = () => {
             {userData && (
               <Link
                 to="/pricing"
-                className="flex items-center space-x-1.5 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 hover:bg-teal-100 transition-colors"
+                className="flex items-center space-x-1.5 bg-surface px-3 py-1.5 rounded-lg border border-border hover:bg-background transition-colors"
               >
-                <FiCreditCard className="w-4 h-4 text-teal-600" />
-                <span className="text-teal-700 font-medium text-sm">
+                <FiCreditCard className="w-4 h-4 text-primary" />
+                <span className="text-primary font-medium text-sm">
                   {userData.credits} Credits
                 </span>
               </Link>
@@ -93,35 +93,35 @@ const Navbar = () => {
               <div className="relative" ref={popupRef}>
                 <button
                   onClick={() => setShowPopup(!showPopup)}
-                  className="w-8 h-8 bg-teal-700 rounded-full flex items-center justify-center text-white font-medium text-sm hover:bg-teal-600 transition-colors"
+                  className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium text-sm hover:bg-primary/90 transition-colors"
                 >
                   {getUserInitial()}
                 </button>
 
                 {/* Popup Menu */}
                 {showPopup && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-sm border border-stone-200 py-1.5 z-50">
+                  <div className="absolute right-0 mt-2 w-56 bg-surface rounded-lg shadow-sm border border-border py-1.5 z-50">
                     {/* User Info */}
-                    <div className="px-4 py-2.5 border-b border-stone-100">
-                      <p className="text-sm font-medium text-stone-800">
+                    <div className="px-4 py-2.5 border-b border-border">
+                      <p className="text-sm font-medium text-text-primary">
                         {userData.name}
                       </p>
-                      <p className="text-xs text-stone-500">{userData.email}</p>
+                      <p className="text-xs text-text-secondary">{userData.email}</p>
                     </div>
 
                     {/* Menu Items */}
                     <Link
                       to="/dashboard"
                       onClick={() => setShowPopup(false)}
-                      className="flex items-center px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
+                      className="flex items-center px-4 py-2 text-sm text-text-secondary hover:bg-background transition-colors"
                     >
-                      <FiFileText className="w-4 h-4 mr-2.5 text-stone-400" />
+                      <FiFileText className="w-4 h-4 mr-2.5 text-text-secondary" />
                       My Notes History
                     </Link>
 
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 transition-colors"
                     >
                       <FiLogOut className="w-4 h-4 mr-2.5" />
                       Logout
@@ -134,7 +134,7 @@ const Navbar = () => {
               <div>
                 <Link
                   to="/auth"
-                  className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-600 transition-colors shadow-sm"
+                  className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
                 >
                   Sign Up
                 </Link>
@@ -146,7 +146,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="text-stone-600 hover:text-stone-800"
+              className="text-text-secondary hover:text-text-primary"
             >
               {showMobileMenu ? (
                 <FiX className="w-5 h-5" />
@@ -161,35 +161,35 @@ const Navbar = () => {
         {showMobileMenu && (
           <div
             ref={mobileMenuRef}
-            className="md:hidden border-2 shadow border-stone-100 py-4"
+            className="md:hidden border-2 shadow border-border py-4 bg-surface"
           >
             <div className="space-y-2">
               <Link
                 to="/"
                 onClick={() => setShowMobileMenu(false)}
-                className="block px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 rounded-lg"
+                className="block px-4 py-2 text-sm text-text-secondary hover:bg-background rounded-lg"
               >
                 Home
               </Link>
               <Link
                 to="/pricing"
                 onClick={() => setShowMobileMenu(false)}
-                className="block px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 rounded-lg"
+                className="block px-4 py-2 text-sm text-text-secondary hover:bg-background rounded-lg"
               >
                 Pricing
               </Link>
 
               {userData && (
                 <>
-                  <div className="px-4 py-2 border-t border-stone-100 mt-2 pt-4">
-                    <p className="text-xs text-stone-400">Signed in as</p>
-                    <p className="text-sm font-medium text-stone-800">{userData.name}</p>
-                    <p className="text-xs text-stone-500">{userData.credits} credits</p>
+                  <div className="px-4 py-2 border-t border-border mt-2 pt-4">
+                    <p className="text-xs text-text-secondary">Signed in as</p>
+                    <p className="text-sm font-medium text-text-primary">{userData.name}</p>
+                    <p className="text-xs text-text-secondary">{userData.credits} credits</p>
                   </div>
                   <Link
                     to="/dashboard"
                     onClick={() => setShowMobileMenu(false)}
-                    className="block px-4 py-2 text-sm text-stone-600 hover:bg-stone-50 rounded-lg"
+                    className="block px-4 py-2 text-sm text-text-secondary hover:bg-background rounded-lg"
                   >
                     My Notes History
                   </Link>
@@ -198,7 +198,7 @@ const Navbar = () => {
                       handleLogout();
                       setShowMobileMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg"
                   >
                     Logout
                   </button>
@@ -210,7 +210,7 @@ const Navbar = () => {
                   <Link
                     to="/auth"
                     onClick={() => setShowMobileMenu(false)}
-                    className="block w-full py-2 bg-teal-700 text-white text-center rounded-lg text-sm font-medium hover:bg-teal-600"
+                    className="block w-full py-2 bg-primary text-white text-center rounded-lg text-sm font-medium hover:bg-primary/90"
                   >
                     Sign Up
                   </Link>
